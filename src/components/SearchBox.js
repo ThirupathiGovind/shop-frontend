@@ -17,7 +17,7 @@ const SearchBox = ({ history }) => {
     <Form onSubmit={submitHandler} inline>
       <Form.Control
         type='text'
-        name='q'
+        name='search box'
         onChange={(e) => setKeyword(e.target.value)}
         placeholder='Search Products...'
         className='mr-sm-2 ml-sm-5'

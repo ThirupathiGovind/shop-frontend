@@ -10,6 +10,7 @@ import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -39,6 +40,7 @@ const ProfileScreen = ({ location, history }) => {
         dispatch(listMyOrders())
       } else {
         setName(user.name)
+        setPhoneNumber(user.phoneNumber)
         setEmail(user.email)
       }
     }
@@ -49,7 +51,7 @@ const ProfileScreen = ({ location, history }) => {
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
     } else {
-      dispatch(updateUserProfile({ id: user._id, name, email, password }))
+      dispatch(updateUserProfile({ id: user._id, name, phoneNumber, email, password }))
     }
   }
 
@@ -73,6 +75,16 @@ const ProfileScreen = ({ location, history }) => {
                 placeholder='Enter name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId='phoneNumber'>
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type='phoneNumber'
+                placeholder='Enter phone number'
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
               ></Form.Control>
             </Form.Group>
 

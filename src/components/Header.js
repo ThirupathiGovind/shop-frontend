@@ -9,7 +9,7 @@ import { logout } from '../actions/userActions'
 const Header = () => {
   const dispatch = useDispatch()
 
-  const userLogin = useSelector((state) => state.userLogin)
+  const userLogin = useSelector((state) => state.userLogin)  
   const { userInfo } = userLogin
 
   const logoutHandler = () => {
@@ -20,18 +20,24 @@ const Header = () => {
     <header>
       <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
         <Container>
+
           <LinkContainer to='/'>
             <Navbar.Brand>ProShop</Navbar.Brand>
           </LinkContainer>
+
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
+
           <Navbar.Collapse id='basic-navbar-nav'>
             <Route render={({ history }) => <SearchBox history={history} />} />
+
             <Nav className='ml-auto'>
+
               <LinkContainer to='/cart'>
                 <Nav.Link>
                   <i className='fas fa-shopping-cart'></i> Cart
                 </Nav.Link>
               </LinkContainer>
+
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
@@ -48,6 +54,7 @@ const Header = () => {
                   </Nav.Link>
                 </LinkContainer>
               )}
+
               {userInfo && userInfo.isAdmin && (
                 <NavDropdown title='Admin' id='adminmenu'>
                   <LinkContainer to='/admin/userlist'>
@@ -61,8 +68,10 @@ const Header = () => {
                   </LinkContainer>
                 </NavDropdown>
               )}
+              
             </Nav>
           </Navbar.Collapse>
+
         </Container>
       </Navbar>
     </header>

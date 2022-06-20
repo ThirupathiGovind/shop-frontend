@@ -12,7 +12,6 @@ import { listProducts } from '../actions/productActions'
 
 const HomeScreen = ({ match }) => {
   const keyword = match.params.keyword
-
   const pageNumber = match.params.pageNumber || 1
 
   const dispatch = useDispatch()
