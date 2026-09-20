@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { PayPalButton } from 'react-paypal-button-v2'
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { Link } from 'react-router-dom'
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import api from '../api/client'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import {
@@ -19,7 +19,8 @@ import {
 const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id
 
-  const [sdkReady, setSdkReady] = useState(false)
+  const [paypalClientId, setPaypalClientId] = useState(null)
+  const [paymentError, setPaymentError] = useState('')
 
   const dispatch = useDispatch()
 
@@ -27,7 +28,7 @@ const OrderScreen = ({ match, history }) => {
   const { order, loading, error } = orderDetails
 
   const orderPay = useSelector((state) => state.orderPay)
-  const { loading: loadingPay, success: successPay } = orderPay
+  const { loading: loadingPay, success: successPay, error: errorPay } = orderPay
 
   const orderDeliver = useSelector((state) => state.orderDeliver)
   const { loading: loadingDeliver, success: successDeliver } = orderDeliver
@@ -51,33 +52,33 @@ const OrderScreen = ({ match, history }) => {
       history.push('/login')
     }
 
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get('/api/config/paypal')
-      const script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
-      script.async = true
-      script.onload = () => {
-        setSdkReady(true)
-      }
-      document.body.appendChild(script)
-    }
-
     if (!order || successPay || successDeliver || order._id !== orderId) {
       dispatch({ type: ORDER_PAY_RESET })
       dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript()
-      } else {
-        setSdkReady(true)
-      }
+      api.get('/api/config/paypal').then(({ data }) => setPaypalClientId(data))
     }
-  }, [dispatch, orderId, successPay, successDeliver, order])
+  }, [dispatch, orderId, successPay, successDeliver, order, history, userInfo])
 
-  const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(orderId, paymentResult))
+  useEffect(() => {
+    if (successPay) {
+      dispatch(getOrderDetails(orderId))
+    }
+  }, [dispatch, orderId, successPay])
+
+  const createPayPalOrder = async () => {
+    setPaymentError('')
+    const { data } = await api.post(`/api/orders/${orderId}/paypal/create`)
+    return data.id
+  }
+
+  const capturePayPalOrder = async (paymentData) => {
+    try {
+      await dispatch(payOrder(orderId, { orderID: paymentData.orderID }))
+    } catch (error) {
+      setPaymentError('Payment could not be verified. Your order remains unpaid.')
+    }
   }
 
   const deliverHandler = () => {
@@ -197,13 +198,26 @@ const OrderScreen = ({ match, history }) => {
               {!order.isPaid && (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
-                  {!sdkReady ? (
+                  {paymentError && <Message variant='danger'>{paymentError}</Message>}
+                  {errorPay && <Message variant='danger'>{errorPay}</Message>}
+                  {!paypalClientId ? (
                     <Loader />
                   ) : (
-                    <PayPalButton
-                      amount={order.totalPrice}
-                      onSuccess={successPaymentHandler}
-                    />
+                    <PayPalScriptProvider
+                      options={{
+                        'client-id': paypalClientId,
+                        currency: 'USD',
+                        intent: 'capture',
+                      }}
+                    >
+                      <PayPalButtons
+                        disabled={loadingPay}
+                        createOrder={createPayPalOrder}
+                        onApprove={capturePayPalOrder}
+                        onCancel={() => setPaymentError('Payment cancelled. Your order remains unpaid.')}
+                        onError={() => setPaymentError('Payment failed or timed out. Please try again.')}
+                      />
+                    </PayPalScriptProvider>
                   )}
                 </ListGroup.Item>
               )}

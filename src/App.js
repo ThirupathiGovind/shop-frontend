@@ -18,38 +18,42 @@ import UserEditScreen from './screens/UserEditScreen'
 import ProductListScreen from './screens/ProductListScreen'
 import ProductEditScreen from './screens/ProductEditScreen'
 import OrderListScreen from './screens/OrderListScreen'
+import PrivateRoute from './components/PrivateRoute'
+import AdminRoute from './components/AdminRoute'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   return (
-    <Router>
-      <Header />
-      <main className='py-3'>
-        <Container>
+    <ErrorBoundary>
+      <Router>
+        <Header />
+        <main className='py-3'>
+          <Container>
           <Route path='/login' component={LoginScreen} />
           <Route path='/register' component={RegisterScreen} />
-          <Route path='/profile' component={ProfileScreen} />
+          <PrivateRoute path='/profile' component={ProfileScreen} />
 
-          <Route path='/order/:id' component={OrderScreen} />
-          <Route path='/shipping' component={ShippingScreen} />
-          <Route path='/payment' component={PaymentScreen} />
-          <Route path='/placeorder' component={PlaceOrderScreen} />
+          <PrivateRoute path='/order/:id' component={OrderScreen} />
+          <PrivateRoute path='/shipping' component={ShippingScreen} />
+          <PrivateRoute path='/payment' component={PaymentScreen} />
+          <PrivateRoute path='/placeorder' component={PlaceOrderScreen} />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />
 
-          <Route path='/admin/userlist' component={UserListScreen} />
-          <Route path='/admin/user/:id/edit' component={UserEditScreen} />
-          <Route
+          <AdminRoute path='/admin/userlist' component={UserListScreen} />
+          <AdminRoute path='/admin/user/:id/edit' component={UserEditScreen} />
+          <AdminRoute
             path='/admin/productlist'
             component={ProductListScreen}
             exact
           />
-          <Route
+          <AdminRoute
             path='/admin/productlist/:pageNumber'
             component={ProductListScreen}
             exact
           />
-          <Route path='/admin/product/:id/edit' component={ProductEditScreen} />
-          <Route path='/admin/orderlist' component={OrderListScreen} />
+          <AdminRoute path='/admin/product/:id/edit' component={ProductEditScreen} />
+          <AdminRoute path='/admin/orderlist' component={OrderListScreen} />
           
           <Route path='/search/:keyword' component={HomeScreen} exact />
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
@@ -59,10 +63,11 @@ const App = () => {
             exact
           />
           <Route path='/' component={HomeScreen} exact />
-        </Container>
-      </main>
-      <Footer />
-    </Router>
+          </Container>
+        </main>
+        <Footer />
+      </Router>
+    </ErrorBoundary>
   )
 }
 

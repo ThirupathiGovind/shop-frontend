@@ -57,8 +57,8 @@ const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : []
 
-const userInfoFromStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo'))
+const userInfoFromStorage = sessionStorage.getItem('userInfo')
+  ? JSON.parse(sessionStorage.getItem('userInfo'))
   : null
 
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
