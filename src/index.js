@@ -7,6 +7,10 @@ import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
+window.addEventListener('auth:expired', () => {
+  store.dispatch({ type: 'USER_LOGOUT' })
+})
+
 ReactDOM.render(
   <Provider store={store}>
     <App />

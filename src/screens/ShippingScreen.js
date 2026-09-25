@@ -18,6 +18,9 @@ const ShippingScreen = ({ history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
+    if (!address.trim() || !city.trim() || !postalCode.trim() || !country.trim()) {
+      return
+    }
     dispatch(saveShippingAddress({ address, city, postalCode, country }))
     history.push('/payment')
   }
@@ -56,6 +59,7 @@ const ShippingScreen = ({ history }) => {
             placeholder='Enter postal code'
             value={postalCode}
             required
+            inputMode='numeric'
             onChange={(e) => setPostalCode(e.target.value)}
           ></Form.Control>
         </Form.Group>
