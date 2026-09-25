@@ -1,3 +1,20 @@
+## Configuration
+
+API hosts are configured per environment with `REACT_APP_API_URL`:
+
+- `.env.development` uses the documented backend default at `127.0.0.1:8000`.
+- `.env.staging` and `.env.production` contain deployment placeholders that must be replaced with real API hosts.
+
+The API client sends credentials for secure cookie sessions and temporarily supports the existing bearer-token response in `sessionStorage` for backend compatibility. The backend should migrate login to an HttpOnly, Secure, SameSite session cookie and stop returning a reusable token.
+
+PayPal requires these backend endpoints:
+
+- `POST /api/orders/:id/paypal/create` creates an order using backend-calculated amount and stock.
+- `POST /api/orders/:id/paypal/capture` captures and verifies the PayPal order server-side, idempotently, then marks the order paid.
+- `GET /api/config/paypal` returns the public client ID.
+
+The client refreshes the order from `GET /api/orders/:id` after capture. Browser approval alone never marks an order paid.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -20,3 +37,19 @@ Builds the app for production to the `build` folder. It correctly bundles React 
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
+
+## Quality checks
+
+Run the frontend standards and coverage checks with:
+
+```sh
+npm run lint
+npm run test:ci
+npm run test:coverage
+npm run build
+npm run quality
+```
+
+Coverage collects authored runtime JavaScript under `src` and excludes generated build output, static assets, and the service worker bootstrap. The target is an 80% global threshold while the component and screen test suite is expanded.
+
+The shared workspace provides the `Shop Quality` custom agent and frontend testing skill under `.github/`.
