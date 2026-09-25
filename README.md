@@ -2,7 +2,7 @@
 
 API hosts are configured per environment with `REACT_APP_API_URL`:
 
-- `.env.development` uses the documented backend default at `127.0.0.1:5000`.
+- `.env.development` uses the documented backend default at `127.0.0.1:8000`.
 - `.env.staging` and `.env.production` contain deployment placeholders that must be replaced with real API hosts.
 
 The API client sends credentials for secure cookie sessions and temporarily supports the existing bearer-token response in `sessionStorage` for backend compatibility. The backend should migrate login to an HttpOnly, Secure, SameSite session cookie and stop returning a reusable token.
