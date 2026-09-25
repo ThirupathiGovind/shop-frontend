@@ -37,3 +37,19 @@ Builds the app for production to the `build` folder. It correctly bundles React 
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
+
+## Quality checks
+
+Run the frontend standards and coverage checks with:
+
+```sh
+npm run lint
+npm run test:ci
+npm run test:coverage
+npm run build
+npm run quality
+```
+
+Coverage collects authored runtime JavaScript under `src` and excludes generated build output, static assets, and the service worker bootstrap. The target is an 80% global threshold while the component and screen test suite is expanded.
+
+The shared workspace provides the `Shop Quality` custom agent and frontend testing skill under `.github/`.
